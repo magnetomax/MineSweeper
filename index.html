@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        MineSweeper
+    </title>
+</head>
+<style>
+body{
+    padding:20px;
+}
+.outer-box{
+    padding: 5px;
+    border: 1px solid darkgray;
+}
+.inner-box{
+
+}
+.ground-block{
+    border:darkgrey 1px solid;
+    background-color: lightgrey;
+    height:30px;
+    width:30px;
+    display: inline-block;
+}
+
+</style>
+<body>
+    <h2>Minesweeper</h2>
+    <div class="outer-box">
+        <div class="inner-box" id="groundLayout"></div>
+    </div>
+    <script src="MineSweeperGenerator.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
