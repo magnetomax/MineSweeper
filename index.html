@@ -19,19 +19,36 @@ body{
 .inner-box{
 
 }
+.flagged{
+    background-color: yellowgreen;
+    border-color: greenyellow;
+}
+
 .ground-block{
-    border:darkgrey 1px solid;
+    border:#b5b5b5 1px solid;
     background-color: lightgrey;
     height:30px;
     width:30px;
     display: inline-block;
 }
+.ground-block button:not([disabled]):hover{
+    border-style: solid;
+    border-color: gold;
+    background-color: ghostwhite;
+}
+button.flagged:hover{
+    background-color: yellowgreen;
+    border-color: greenyellow;
+}
 
 </style>
 <body>
     <h2>Minesweeper</h2>
+    <button type="button" id="startNew">Start New Game</button>
+    <span>Flags&nbsp;:&nbsp;<span id="flags">000</span></span>
+    <span>Time&nbsp;:&nbsp;<span id="timer">000</span></span>
     <div class="outer-box">
-        <div class="inner-box" id="groundLayout"></div>
+        
     </div>
     <script src="MineSweeperGenerator.js"></script>
     <script src="game.js"></script>
