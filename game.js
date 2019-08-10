@@ -1,15 +1,52 @@
 ((d)=>{
-    class BombShell{}
-    class Flag{}
+
+    class MineFlag{
+        _element = document.createElement('span');
+        constructor(){
+            this._element.style = 'display: table-caption; padding: 4px;';
+            this._element.textContent = 'F';
+        }
+        getElement(){
+            return this._element;
+        }
+    }
+
     class Block{
         _element;
+        _content;
+        _flagged = false;
+        _flagElement;
         constructor(content){
+            this.revealBlock = this.revealBlock.bind(this);
+            this.toggleFlagBlock = this.toggleFlagBlock.bind(this);
+            this._content = content;
             this._element = d.createElement('span');
             this._element.className = 'ground-block';
-            let teps= d.createElement('span');
-            teps.style='position: relative;top: 25%;left:25%;';
-            teps.textContent = content;
-            this._element.appendChild(teps); 
+            let teps= d.createElement('button');
+            // teps.style='position: relative;top: 25%;left:25%;';
+            teps.style = 'width: 100%;height: 100%;';
+            teps.addEventListener('contextmenu',this.toggleFlagBlock,false);
+            teps.addEventListener('click',this.revealBlock,true);
+            // teps.textContent = content;
+            this._element.appendChild(teps);
+        }
+
+        revealBlock(event){
+            event.target.textContent = this.content;
+        }
+
+        toggleFlagBlock(event){
+            event.preventDefault();
+            this._flagged = !this._flagged;
+            if (this._flagged) {
+                this._flagElement = (new MineFlag()).getElement();
+                event.target.appendChild(this._flagElement);
+                event.target.removeEventListener('click',this.revealBlock,true);
+            } else {
+                this._flagElement.remove();
+                event.target.addEventListener('click',this.revealBlock,true);
+            }  
+            return false;
         }
 
         getElement(){
@@ -46,6 +83,6 @@
 
     }
 
-    let mObj = new MineSweeper(10,10,10);
+    let mObj = new MineSweeper(15,15,10);
 
 })(document)
