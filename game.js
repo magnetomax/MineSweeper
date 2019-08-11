@@ -3,7 +3,7 @@
     class MineContent {
         _element = document.createElement('span');
         constructor(content) {
-            this._element.style = 'display: table-caption; padding: 4px;';
+            this._element.style = 'display: table-caption; padding: 2px;';
             this._element.textContent = content;
         }
         getElement() {
@@ -33,7 +33,7 @@
             this._element.className = 'ground-block';
 
             let teps = d.createElement('button');
-            teps.style = 'width: 100%;height: 100%;';
+            teps.style = 'width: 30px;height: 29px;';
             teps.addEventListener('contextmenu', this.checkFlags, true);
             teps.addEventListener('click', this.revealBlock, true);
 
@@ -48,9 +48,9 @@
             switch (this._content) {
                 case 'X':
                     event.target.style = `
-                        width: 100%;
+                        width: 30px;
                         color: white;
-                        height: 100%;
+                        height: 29px;
                         background-color: firebrick;
                         border-style: solid;
                         border-color: firebrick;`;
@@ -78,14 +78,33 @@
                             }, 10);
                         }
                     }
+
                     default:
+                        
                         event.target.style = `
-                        width: 100%;
+                        width: 30px;
                         color: white;
-                        height: 100%;
+                        height: 29px;
                         background-color: darkgray;
                         border-style: solid;
                         border-color: darkgray;`;
+                        
+                        
+                        if (typeof this._content === 'number') {
+                            event.target.style.fontWeight = '900';
+                            switch (this._content) {
+                                case 1:event.target.style.color = 'darkblue';                        
+                                    break;
+                                case 2:event.target.style.color = 'darkgreen';                        
+                                    break;
+                                case 3:event.target.style.color = 'red';                        
+                                    break;
+                                case 4:event.target.style.color = 'indigo';                        
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                         break;
             }
 
@@ -187,7 +206,7 @@
                 clearAll();
             }
             d.querySelector('.outer-box').innerHTML = '<div class="inner-box" id="groundLayout"></div>';
-            mObj = new MineSweeper(15, 15, 5, '.outer-box');
+            mObj = new MineSweeper(15, 15, 30, '.outer-box');
             d.querySelector('#flags').textContent = mObj._noOfMines;
             resetTimer();
         }
