@@ -1,7 +1,6 @@
 # MineSweeper
-MineSweeper clone from scratch
+MineSweeper using ES6 JavaScript
 
-Todo:
-1. Add Comments to indicate the flow.
-2. UI to demonstarte the generator.
-3. Working site to enjoy the game.
+Created using classes and objects concept.
+
+
