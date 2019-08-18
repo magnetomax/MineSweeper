@@ -114,7 +114,8 @@
                         height: 30px;
                         background-color: darkgray;
                         border-style: solid;
-                        border-color: darkgray;`;
+                        border-color: darkgray;
+                        padding-left:5px;`;
 
                             if (typeof data.block.val === 'number') {
                                 btnElement.style.fontWeight = '900';
@@ -152,7 +153,8 @@
                                 height: 30px;
                                 background-color: firebrick;
                                 border-style: solid;
-                                border-color: firebrick;`;
+                                border-color: firebrick;
+                                padding-left:5px;`;
                         }
                     
                         d.querySelectorAll('.ground-block button').forEach(ele => {
