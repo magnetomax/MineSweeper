@@ -1,8 +1,9 @@
 ((d) => {
 
     class MineContent {
-        _element = document.createElement('span');
+        
         constructor(content) {
+            this._element = document.createElement('span');
             this._element.style = 'display: table-caption; padding: 0px;';
             this._element.textContent = content;
         }
@@ -12,13 +13,13 @@
     }
 
     class UIBlock {
-        _element;
-        _btnElement;
-        _content;
-        _flagElement;
-        _logic;
-        _x;
-        _y;
+        // _element;
+        // _btnElement;
+        // _content;
+        // _flagElement;
+        // _logic;
+        // _x;
+        // _y;
 
         constructor(logic, block) {
             this.revealBlock = this.revealBlock.bind(this);
@@ -33,7 +34,8 @@
             this._element.className = 'ground-block';
 
             this._btnElement = d.createElement('button');
-            this._btnElement.style = 'width: 30px;height: 29px;';
+            this._btnElement.innerHTML = '&nbsp;';
+            this._btnElement.style = 'width: 30px;height: 30px;';
             this._btnElement.addEventListener('contextmenu', this.checkFlags, true);
             this._btnElement.addEventListener('click', this.revealBlock, true);
             this._element.appendChild(this._btnElement);
@@ -50,12 +52,14 @@
         }
 
         addFlag(){
-            this._flagElement = (new MineContent('🚩')).getElement();
-            this._btnElement.appendChild(this._flagElement);
+            this._btnElement.textContent = '🚩';
+            // this._flagElement = (new MineContent('🚩')).getElement();
+            // this._btnElement.appendChild(this._flagElement);
         }
 
         removeFlag(){
-            this._flagElement.remove();
+            this._btnElement.innerHTML = '&nbsp;';
+            // this._flagElement.remove();
         }
 
         getElement(query) {
@@ -68,18 +72,18 @@
 
 
     class MineSweeper {
-        _rows;
-        _columns;
-        _groundLayout;
-        _logic;
-        _noOfMines;
-        _flagCount;
-        _firstTime = true;
-        _uiLayout;
+        // _rows;
+        // _columns;
+        // _groundLayout;
+        // _logic;
+        // _noOfMines;
+        // _flagCount;
+        
+        // _uiLayout;
 
         constructor(rows, columns, noOfMines) {
             this.onEvent = this.onEvent.bind(this);
-
+            this._firstTime = true;
             this._rows = rows;
             this._columns = columns;
             this._noOfMines = this._flagCount = noOfMines;
@@ -98,7 +102,8 @@
             switch (event) {
                 case 'block_reveal':
                         if (!data.block.isflagged) {
-                            btnElement.appendChild((new MineContent(data.block.val)).getElement());
+                            // btnElement.appendChild((new MineContent(data.block.val)).getElement());
+                            btnElement.innerHTML = data.block.val;
                             btnElement.removeEventListener('click', uiBlock.revealBlock, true);
                             btnElement.removeEventListener('contextmenu', uiBlock.checkFlags, true);
                             btnElement.disabled = true;
@@ -106,7 +111,7 @@
                             btnElement.style = `
                         width: 30px;
                         color: white;
-                        height: 29px;
+                        height: 30px;
                         background-color: darkgray;
                         border-style: solid;
                         border-color: darkgray;`;
@@ -144,7 +149,7 @@
                             btnElement.style = `
                                 width: 30px;
                                 color: white;
-                                height: 29px;
+                                height: 30px;
                                 background-color: firebrick;
                                 border-style: solid;
                                 border-color: firebrick;`;

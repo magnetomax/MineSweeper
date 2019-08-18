@@ -1,19 +1,19 @@
 class MineSweeperLogic{
-    _rows;
-    _columns;
-    _noOfMines;
-    _layoutMatrix;
-    _flagCount;
-    _timerCount;
-    _timerInterval;
-    _generator;
-    _status;
-    _handlers;
-    _spaceChar;
-    _mineChar;
+    // _rows;
+    // _columns;
+    // _noOfMines;
+    // _layoutMatrix;
+    // _flagCount;
+    // _timerCount;
+    // _timerInterval;
+    // _generator;
+    // _status;
+    // _handlers;
+    // _spaceChar;
+    // _mineChar;
 
     constructor(rows,columns,noOfMines) {
-        this._spaceChar = ' ';
+        this._spaceChar = '&nbsp;';
         this._mineChar = '💥';
         this._generator = new MinesweeperGenerator(this._mineChar,this._spaceChar);
         this._rows = rows;

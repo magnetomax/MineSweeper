@@ -1,12 +1,12 @@
 'use strict';
 
 class Block{
-    val;
-    isflagged;
-    isMine;
-    isRevealed;
-    x;
-    y;
+    // val;
+    // isflagged;
+    // isMine;
+    // isRevealed;
+    // x;
+    // y;
     constructor(x,y,value) {
         this.x = x;
         this.y = y;
@@ -19,12 +19,12 @@ class Block{
 }
 
 class MinesweeperGenerator {
-    rows;
-    columns; 
-    noOfMines; 
-    generatedArray;
-    _blankSpace;
-    _mine;
+    // rows;
+    // columns; 
+    // noOfMines; 
+    // generatedArray;
+    // _blankSpace;
+    // _mine;
 
     constructor(mine,blankSpace) { 
         this._blankSpace = blankSpace;
