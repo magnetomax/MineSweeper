@@ -3,7 +3,7 @@
     class MineContent {
         _element = document.createElement('span');
         constructor(content) {
-            this._element.style = 'display: table-caption; padding: 2px;';
+            this._element.style = 'display: table-caption; padding: 0px;';
             this._element.textContent = content;
         }
         getElement() {
@@ -11,224 +11,225 @@
         }
     }
 
-    class Block {
+    class UIBlock {
         _element;
+        _btnElement;
         _content;
-        _flagged = false;
         _flagElement;
-        _layoutMatrix;
+        _logic;
         _x;
         _y;
-        _blockEvent;
-        constructor(layoutMatrix, x, y) {
-            this._layoutMatrix = layoutMatrix;
-            this._x = x;
-            this._y = y;
-            this._content = layoutMatrix[x][y];
 
+        constructor(logic, block) {
             this.revealBlock = this.revealBlock.bind(this);
             this.checkFlags = this.checkFlags.bind(this);
+
+            this._logic = logic;
+            this._x = block.x;
+            this._y = block.y;
+            this._content = block.val;
 
             this._element = d.createElement('span');
             this._element.className = 'ground-block';
 
-            let teps = d.createElement('button');
-            teps.style = 'width: 30px;height: 29px;';
-            teps.addEventListener('contextmenu', this.checkFlags, true);
-            teps.addEventListener('click', this.revealBlock, true);
-
-            this._element.appendChild(teps);
+            this._btnElement = d.createElement('button');
+            this._btnElement.style = 'width: 30px;height: 29px;';
+            this._btnElement.addEventListener('contextmenu', this.checkFlags, true);
+            this._btnElement.addEventListener('click', this.revealBlock, true);
+            this._element.appendChild(this._btnElement);
         }
 
         revealBlock(event) {
-            event.target.appendChild((new MineContent(this._content)).getElement());
-            event.target.removeEventListener('click', this.revealBlock, true);
-            event.target.removeEventListener('contextmenu', this.checkFlags, true);
-            event.target.disabled = true;
-            switch (this._content) {
-                case 'X':
-                    event.target.style = `
-                        width: 30px;
-                        color: white;
-                        height: 29px;
-                        background-color: firebrick;
-                        border-style: solid;
-                        border-color: firebrick;`;
-                    this._blockEvent && this._blockEvent('game_over');
-                    break;
-                case '|':
-                    //Search for adjecent blocks till it gets covered and reveal all of them
-                    let x = this._x;
-                    let y = this._y;
-                    let adjecentBlocks = [
-                        [x + 1, y + 1],
-                        [x - 1, y - 1],
-                        [x + 1, y],
-                        [x - 1, y],
-                        [x, y + 1],
-                        [x, y - 1],
-                        [x + 1, y - 1],
-                        [x - 1, y + 1]
-                    ];
-                    for (const cord of adjecentBlocks) {
-                        let temp = this._layoutMatrix[cord[0]] && this._layoutMatrix[cord[0]][cord[1]];
-                        if (temp) {
-                            setTimeout(() => {
-                                temp.getElement().firstChild.click();
-                            }, 10);
-                        }
-                    }
+            this._logic.reveal(this._x, this._y);
+        }
 
-                    default:
-                        
-                        event.target.style = `
+        checkFlags(event) {
+            event.preventDefault();
+            this._logic.flag(this._x, this._y)
+            return false;
+        }
+
+        addFlag(){
+            this._flagElement = (new MineContent('🚩')).getElement();
+            this._btnElement.appendChild(this._flagElement);
+        }
+
+        removeFlag(){
+            this._flagElement.remove();
+        }
+
+        getElement(query) {
+            if (query) {
+                return this._element.querySelector(query);
+            }
+            return this._element
+        }
+    }
+
+
+    class MineSweeper {
+        _rows;
+        _columns;
+        _groundLayout;
+        _logic;
+        _noOfMines;
+        _flagCount;
+        _firstTime = true;
+        _uiLayout;
+
+        constructor(rows, columns, noOfMines) {
+            this.onEvent = this.onEvent.bind(this);
+
+            this._rows = rows;
+            this._columns = columns;
+            this._noOfMines = this._flagCount = noOfMines;
+            this._logic = new MineSweeperLogic(rows, columns, noOfMines);
+            this._logic.onEvent(this.onEvent);
+        }
+
+        onEvent(event, data) {
+            let btnElement;
+            let uiBlock;
+
+            if (data && data.block) {
+                uiBlock = this._uiLayout[data.block.x][data.block.y];
+                btnElement = uiBlock.getElement('button');
+            }
+            switch (event) {
+                case 'block_reveal':
+                        if (!data.block.isflagged) {
+                            btnElement.appendChild((new MineContent(data.block.val)).getElement());
+                            btnElement.removeEventListener('click', uiBlock.revealBlock, true);
+                            btnElement.removeEventListener('contextmenu', uiBlock.checkFlags, true);
+                            btnElement.disabled = true;
+
+                            btnElement.style = `
                         width: 30px;
                         color: white;
                         height: 29px;
                         background-color: darkgray;
                         border-style: solid;
                         border-color: darkgray;`;
-                        
-                        
-                        if (typeof this._content === 'number') {
-                            event.target.style.fontWeight = '900';
-                            switch (this._content) {
-                                case 1:event.target.style.color = 'darkblue';                        
-                                    break;
-                                case 2:event.target.style.color = 'darkgreen';                        
-                                    break;
-                                case 3:event.target.style.color = 'red';                        
-                                    break;
-                                case 4:event.target.style.color = 'indigo';                        
-                                    break;
-                                default:
-                                    break;
+
+                            if (typeof data.block.val === 'number') {
+                                btnElement.style.fontWeight = '900';
+                                switch (data.block.val) {
+                                    case 1:
+                                        btnElement.style.color = 'darkblue';
+                                        break;
+                                    case 2:
+                                        btnElement.style.color = 'darkgreen';
+                                        break;
+                                    case 3:
+                                        btnElement.style.color = 'red';
+                                        break;
+                                    case 4:
+                                        btnElement.style.color = 'indigo';
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
+
                         }
+
                         break;
+                case 'game_reset':
+                    d.querySelector('#flags').textContent = data.flagCount;
+                    d.querySelector('#timer').textContent = data.timerCount;
+                    break;
+                case 'game_completed':
+                case 'game_over':
+                        if (btnElement) {
+                            btnElement.style = `
+                                width: 30px;
+                                color: white;
+                                height: 29px;
+                                background-color: firebrick;
+                                border-style: solid;
+                                border-color: firebrick;`;
+                        }
+                    
+                        d.querySelectorAll('.ground-block button').forEach(ele => {
+                            ele.disabled = true;
+                        });
+                    break;
+                case 'flag_updated':
+
+                        if (data.isFlagged) {
+                            uiBlock.addFlag();
+                            btnElement.removeEventListener('click', uiBlock.revealBlock, true);
+                            btnElement.className = 'flagged';
+                        } else {
+                            btnElement.className = '';
+                            uiBlock.removeFlag();
+                            btnElement.addEventListener('click', uiBlock.revealBlock, true);
+                        }
+
+                        d.querySelector('#flags').textContent = data.flagCount;
+                    break;
+                case 'timer_start':
+                case 'timer_count':
+                    d.querySelector('#timer').textContent = data.timerCount;
+                    break;
+                default:
+                    break;
             }
 
-        }
-
-        onEvent(fnc) {
-            this._blockEvent = fnc;
-        }
-
-        checkFlags(event) {
-            event.preventDefault();
-            let shouldContinue = this._blockEvent('flag_triggered', this._flagged);
-            if (shouldContinue) {
-                this.toggleFlagBlock(event);
+            let startBtn = d.querySelector('#startNew');
+            let gameMsgs = d.querySelector('#game-messages');
+            switch (event) {
+                case 'game_reset':
+                        startBtn.textContent = '😃'; gameMsgs.textContent = ''; break;
+                case 'game_completed':
+                        startBtn.textContent = '😎'; gameMsgs.textContent = 'Congratulations!! You have won!'; break;
+                case 'game_over':
+                        startBtn.textContent = '😣'; gameMsgs.textContent = 'Game Over! Click on smiley to play again.'; break;             
+                    break;
+            
+                default:
+                    break;
             }
-            return false;
-        }
-
-        toggleFlagBlock(event) {
-            let btnElement = event.target;
-            if (event.target.tagName !== 'BUTTON') btnElement = event.target.parentElement;
-            this._flagged = !this._flagged;
-            if (this._flagged) {
-                this._flagElement = (new MineContent('F')).getElement();
-                btnElement.appendChild(this._flagElement);
-                btnElement.removeEventListener('click', this.revealBlock, true);
-                btnElement.className = 'flagged';
-            } else {
-                btnElement.className = '';
-                this._flagElement.remove();
-                btnElement.addEventListener('click', this.revealBlock, true);
-            }
-        }
-
-        getElement() {
-            return this._element
-        }
-    }
-    class MineSweeper {
-        _rows;
-        _columns;
-        _groundLayout = d.querySelector('#groundLayout');
-        _layoutMatrix;
-        _noOfMines;
-        _flagCount;
-
-        constructor(rows, columns, noOfMines) {
-            this._rows = rows;
-            this._columns = columns;
-            this._noOfMines = this._flagCount = noOfMines;
-            this._layoutMatrix = new MinesweeperGenerator(rows, columns, noOfMines);
-            //Create ground tiles
-            this.createDOMLayout(this._layoutMatrix.generate());
-        }
-
-        createGame() {
-
         }
 
         createDOMLayout(lm) {
+            this._uiLayout = []
             for (let x = 0; x < lm.length; x++) {
+                let arr = [];
                 let rowTag = d.createElement('div');
                 for (let y = 0; y < lm[x].length; y++) {
-                    let temp = new Block(lm, x, y);
-                    temp.onEvent((event, flagged) => {
-                        switch (event) {
-                            case 'game_over':
-                                d.querySelectorAll('.ground-block button').forEach(ele=>{ele.disabled=true;});
-                            break;
-                            case 'flag_triggered':
-                                if (!flagged) {
-                                    if (this._flagCount <= 0) return false;
-                                    --this._flagCount;
-                                } else {
-                                    ++this._flagCount;
-                                }
-                                d.querySelector('#flags').textContent = this._flagCount;
-                                return true;
-
-                            default:
-                                break;
-                        }
-                    });
-                    lm[x][y] = temp;
+                    let temp = new UIBlock(this._logic, lm[x][y]);
                     rowTag.appendChild(temp.getElement());
+                    arr.push(temp);
                 }
                 this._groundLayout.appendChild(rowTag);
+                this._uiLayout.push(arr);
             }
-
         }
 
+        start() {
+            if (!this._firstTime) {
+                this._groundLayout.remove();
+                this._logic.resetGame();
+            }
+            //Create ground tiles
+            d.querySelector('.outer-box').innerHTML = '<div class="inner-box" id="groundLayout"></div>';
+            this._groundLayout = d.querySelector('#groundLayout');
+            this.createDOMLayout(this._logic.getLayout());
+            d.querySelector('#flags').textContent = this._flagCount;
+            this._firstTime = false;
+        }
     }
 
     function init() {
-        let timerInterval;
-
-        function startNewGame(event) {
-            if (mObj) {
-                clearAll();
-            }
-            d.querySelector('.outer-box').innerHTML = '<div class="inner-box" id="groundLayout"></div>';
-            mObj = new MineSweeper(15, 15, 30, '.outer-box');
-            d.querySelector('#flags').textContent = mObj._noOfMines;
-            resetTimer();
+        function startNewGame() {
+            mObj.start();
         }
-
-        function resetTimer() {
-            let timerElement = d.querySelector('#timer');
-            let count = 0;
-            timerInterval = setInterval(() => {
-                timerElement.textContent = ++count;
-            }, 1000);
-        }
-
-        function clearAll() {
-            clearInterval(timerInterval);
-            d.getElementById('groundLayout').remove();
-            delete mObj;
-        }
-
         d.getElementById('startNew').addEventListener('click', startNewGame);
+        startNewGame();
     }
 
-    let mObj;
+    let mObj = new MineSweeper(15, 12, 15);
     init();
 
 })(document)
