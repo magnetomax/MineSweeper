@@ -1,17 +1,5 @@
 ((d) => {
 
-    class MineContent {
-        
-        constructor(content) {
-            this._element = document.createElement('span');
-            this._element.style = 'display: table-caption; padding: 0px;';
-            this._element.textContent = content;
-        }
-        getElement() {
-            return this._element;
-        }
-    }
-
     class UIBlock {
         // _element;
         // _btnElement;
@@ -53,8 +41,6 @@
 
         addFlag(){
             this._btnElement.textContent = '🚩';
-            // this._flagElement = (new MineContent('🚩')).getElement();
-            // this._btnElement.appendChild(this._flagElement);
         }
 
         removeFlag(){
@@ -102,7 +88,6 @@
             switch (event) {
                 case 'block_reveal':
                         if (!data.block.isflagged) {
-                            // btnElement.appendChild((new MineContent(data.block.val)).getElement());
                             btnElement.innerHTML = data.block.val;
                             btnElement.removeEventListener('click', uiBlock.revealBlock, true);
                             btnElement.removeEventListener('contextmenu', uiBlock.checkFlags, true);
@@ -236,7 +221,7 @@
         startNewGame();
     }
 
-    let mObj = new MineSweeper(15, 12, 15);
+    let mObj = new MineSweeper(13, 10, 15);
     init();
 
 })(document)
