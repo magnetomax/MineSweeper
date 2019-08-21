@@ -23,7 +23,7 @@
 
             this._btnElement = d.createElement('button');
             this._btnElement.innerHTML = '&nbsp;';
-            this._btnElement.style = 'width: 30px;height: 30px;';
+            this._btnElement.className = 'block-btn';
             this._btnElement.addEventListener('contextmenu', this.checkFlags, true);
             this._btnElement.addEventListener('click', this.revealBlock, true);
             this._element.appendChild(this._btnElement);
@@ -75,6 +75,10 @@
             this._noOfMines = this._flagCount = noOfMines;
             this._logic = new MineSweeperLogic(rows, columns, noOfMines);
             this._logic.onEvent(this.onEvent);
+            this.timerText = d.querySelector('#timer');
+            this.flagsText = d.querySelector('#flags');
+            this.startBtn = d.querySelector('#startNew');
+            this.gameMsgs = d.querySelector('#game-messages');
         }
 
         onEvent(event, data) {
@@ -92,18 +96,10 @@
                             btnElement.removeEventListener('click', uiBlock.revealBlock, true);
                             btnElement.removeEventListener('contextmenu', uiBlock.checkFlags, true);
                             btnElement.disabled = true;
-
-                            btnElement.style = `
-                        width: 30px;
-                        color: white;
-                        height: 30px;
-                        background-color: darkgray;
-                        border-style: solid;
-                        border-color: darkgray;
-                        padding-left:5px;`;
+                            btnElement.className += ' block-reveal-btn';
 
                             if (typeof data.block.val === 'number') {
-                                btnElement.style.fontWeight = '900';
+                                // btnElement.style.fontWeight = '900';
                                 switch (data.block.val) {
                                     case 1:
                                         btnElement.style.color = 'darkblue';
@@ -126,22 +122,14 @@
 
                         break;
                 case 'game_reset':
-                    d.querySelector('#flags').textContent = data.flagCount;
-                    d.querySelector('#timer').textContent = data.timerCount;
+                    this.flagsText.textContent = data.flagCount;
+                    this.timerText.textContent = data.timerCount;
                     break;
                 case 'game_completed':
                 case 'game_over':
                         if (btnElement) {
-                            btnElement.style = `
-                                width: 30px;
-                                color: white;
-                                height: 30px;
-                                background-color: firebrick;
-                                border-style: solid;
-                                border-color: firebrick;
-                                padding-left:5px;`;
+                            btnElement.className += ' game-over-btn';
                         }
-                    
                         d.querySelectorAll('.ground-block button').forEach(ele => {
                             ele.disabled = true;
                         });
@@ -151,34 +139,30 @@
                         if (data.isFlagged) {
                             uiBlock.addFlag();
                             btnElement.removeEventListener('click', uiBlock.revealBlock, true);
-                            btnElement.className = 'flagged';
+                            btnElement.className += ' flagged';
                         } else {
-                            btnElement.className = '';
+                            btnElement.className = 'block-btn';
                             uiBlock.removeFlag();
                             btnElement.addEventListener('click', uiBlock.revealBlock, true);
                         }
 
-                        d.querySelector('#flags').textContent = data.flagCount;
+                        this.flagsText.textContent = data.flagCount;
                     break;
                 case 'timer_start':
                 case 'timer_count':
-                    d.querySelector('#timer').textContent = data.timerCount;
+                    this.timerText.textContent = data.timerCount;
                     break;
                 default:
                     break;
             }
 
-            let startBtn = d.querySelector('#startNew');
-            let gameMsgs = d.querySelector('#game-messages');
             switch (event) {
                 case 'game_reset':
-                        startBtn.textContent = '😃'; gameMsgs.textContent = ''; break;
+                        this.startBtn.textContent = '😃'; this.gameMsgs.textContent = ''; break;
                 case 'game_completed':
-                        startBtn.textContent = '😎'; gameMsgs.textContent = 'Congratulations!! You have won!'; break;
+                        this.startBtn.textContent = '😎'; this.gameMsgs.textContent = 'Congratulations!! You have won!'; break;
                 case 'game_over':
-                        startBtn.textContent = '😣'; gameMsgs.textContent = 'Game Over! Click on smiley to play again.'; break;             
-                    break;
-            
+                        this.startBtn.textContent = '😣'; this.gameMsgs.textContent = 'Game Over! Click on smiley to play again.'; break;             
                 default:
                     break;
             }
@@ -208,7 +192,7 @@
             d.querySelector('.outer-box').innerHTML = '<div class="inner-box" id="groundLayout"></div>';
             this._groundLayout = d.querySelector('#groundLayout');
             this.createDOMLayout(this._logic.getLayout());
-            d.querySelector('#flags').textContent = this._flagCount;
+            this.flagsText.textContent = this._flagCount;
             this._firstTime = false;
         }
     }
